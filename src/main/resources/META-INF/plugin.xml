@@ -1,0 +1,16 @@
+
+<idea-plugin>
+    <id>org.jetbrains.idea.maven.maven2-support</id>
+    <name>Maven2 Support</name>
+    <vendor>JetBrains</vendor>
+    <description><![CDATA[
+     Provides <a href="https://maven.apache.org/maven-2.x-eol.html">Maven 2</a> support.
+     Apache Maven 2.x has reached its end of life in 2009.
+     Do not install this plugin if you unsure you really need it.
+  ]]></description>
+    <depends>org.jetbrains.idea.maven</depends>
+
+    <extensions defaultExtensionNs="org.jetbrains.idea.maven">
+        <versionAwareMavenSupport implementation="org.jetbrains.idea.maven2.maven2support.Maven2SupportExtension"/>
+    </extensions>
+</idea-plugin>
