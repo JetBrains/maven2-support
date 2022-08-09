@@ -8,9 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.maven.MavenVersionAwareSupportExtension;
 import org.jetbrains.idea.maven.model.MavenId;
-import org.jetbrains.idea.maven.project.MavenProjectBundle;
 import org.jetbrains.idea.maven.server.MavenDistribution;
-import org.jetbrains.idea.maven.server.MavenDistributionsCache;
 import org.jetbrains.idea.maven.server.MavenServer;
 import org.jetbrains.idea.maven.utils.MavenUtil;
 
@@ -19,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
-
-import static org.jetbrains.idea.maven.server.MavenServerManager.BUNDLED_MAVEN_2;
-import static org.jetbrains.idea.maven.server.MavenServerManager.BUNDLED_MAVEN_3;
 
 public class Maven2SupportExtension implements MavenVersionAwareSupportExtension {
     public static final String BUNDLED_MAVEN_2 = "Bundled (Maven 2)";
@@ -34,16 +29,24 @@ public class Maven2SupportExtension implements MavenVersionAwareSupportExtension
 
     @Override
     public @Nullable File getMavenHomeFile(@Nullable String mavenHomeName) {
+        if (mavenHomeName == null) return null;
+        if (StringUtil.equals(BUNDLED_MAVEN_2, mavenHomeName)) {
+            return Bundled2DistributionInfo.getMavenHome2().getMavenHome().toFile();
+        }
         return null;
     }
 
     @Override
     public @Nullable String asMavenHome(DistributionInfo distribution) {
+        if (distribution instanceof Bundled2DistributionInfo) return BUNDLED_MAVEN_2;
         return null;
     }
 
     @Override
     public @Nullable DistributionInfo asDistributionInfo(String mavenHome) {
+        if (StringUtil.equals(BUNDLED_MAVEN_2, mavenHome)) {
+            return new Bundled2DistributionInfo(Bundled2DistributionInfo.getMavenHome2().getVersion());
+        }
         return null;
     }
 
