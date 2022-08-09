@@ -35,13 +35,21 @@ subprojects {
         maven(url = "https://cache-redirector.jetbrains.com/intellij-dependencies")
         maven(url = "https://www.jetbrains.com/intellij-repository/nightly")
     }
+
+    tasks {
+        // Set the JVM compatibility versions
+        withType<JavaCompile> {
+            sourceCompatibility = "1.8"
+            targetCompatibility = "1.8"
+        }
+    }
 }
 
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 
     buildPlugin {
