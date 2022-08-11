@@ -13,4 +13,7 @@
     <extensions defaultExtensionNs="org.jetbrains.idea.maven">
         <versionAwareMavenSupport implementation="org.jetbrains.idea.maven2.maven2support.Maven2SupportExtension"/>
     </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <dependencySupport kind="maven-version-support" coordinate="maven2" displayName="Maven2  Support Plugin"/>
+    </extensions>
 </idea-plugin>
