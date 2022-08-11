@@ -22,6 +22,11 @@ public class Maven2SupportExtension implements MavenVersionAwareSupportExtension
     public static final String BUNDLED_MAVEN_2 = "Bundled (Maven 2)";
 
     @Override
+    public @NotNull List<String> supportedBundles() {
+        return List.of(BUNDLED_MAVEN_2);
+    }
+
+    @Override
     public boolean isSupportedByExtension(@Nullable File mavenHome) {
         String version = MavenUtil.getMavenVersion(mavenHome);
         return StringUtil.compareVersionNumbers(version, "3") < 0;
