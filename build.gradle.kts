@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.jetbrains.idea.maven"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 val ideaVersion by rootProject.extra { "231-SNAPSHOT" }
 val ideaType by rootProject.extra { "IC" }
