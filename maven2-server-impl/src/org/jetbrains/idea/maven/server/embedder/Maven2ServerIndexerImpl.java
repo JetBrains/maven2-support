@@ -108,10 +108,14 @@ public final class Maven2ServerIndexerImpl extends MavenRemoteObject implements 
     return myIndexer.getIndexingContexts().size();
   }
 
-  @Override
+
+  public void updateIndex(MavenIndexId mavenIndexId, MavenServerProgressIndicator indicator, MavenToken token) throws RemoteException, MavenServerIndexerException, MavenServerProcessCanceledException {
+    updateIndex(mavenIndexId, new MavenServerSettings(), indicator, token);
+  }
+
   public void updateIndex(MavenIndexId mavenIndexId, MavenServerSettings settings,
                           MavenServerProgressIndicator indicator, MavenToken token)
-    throws MavenServerIndexerException, MavenServerProcessCanceledException, RemoteException {
+          throws MavenServerIndexerException, MavenServerProcessCanceledException, RemoteException {
     MavenServerUtil.checkToken(token);
 
     try {
@@ -288,13 +292,16 @@ public final class Maven2ServerIndexerImpl extends MavenRemoteObject implements 
         result.add(Maven2ModelConverter.convertArtifactInfo(a));
       }
       return result;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new MavenServerIndexerException(wrapException(e));
     }
   }
 
   @Override
+  public Collection<MavenArchetype> getInternalArchetypes(MavenToken token) throws RemoteException {
+    return getArchetypes(token);
+  }
+
   public Collection<MavenArchetype> getArchetypes(MavenToken token) throws RemoteException {
     MavenServerUtil.checkToken(token);
     Set<MavenArchetype> result = new HashSet<MavenArchetype>();
