@@ -14,6 +14,6 @@ public class Bundled2DistributionInfo extends BundledDistributionInfo {
 
     public static LocalMavenDistribution getMavenHome2() {
         Path pluginsRoot = PathManager.getPluginsDir();
-        return new LocalMavenDistribution(pluginsRoot.resolve("maven2-support/bundled-maven2"), Maven2SupportExtension.BUNDLED_MAVEN_2);
+        return new LocalMavenDistribution(pluginsRoot.resolve("maven2-support/bundled-maven-2"), Maven2SupportExtension.BUNDLED_MAVEN_2);
     }
 }
