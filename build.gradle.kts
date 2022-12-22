@@ -1,12 +1,12 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.8.0"
+    id("org.jetbrains.intellij") version "1.11.0"
 }
 
 group = "org.jetbrains.idea.maven"
 version = "1.0-SNAPSHOT"
 
-val ideaVersion by rootProject.extra { "223-SNAPSHOT" }
+val ideaVersion by rootProject.extra { "231-SNAPSHOT" }
 val ideaType by rootProject.extra { "IC" }
 
 repositories {
@@ -48,8 +48,8 @@ subprojects {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     buildPlugin {

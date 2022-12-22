@@ -9,6 +9,7 @@
      Do not install this plugin if you unsure you really need it.
   ]]></description>
     <depends>org.jetbrains.idea.maven</depends>
+    <idea-version since-build="223.*" until-build="233.*"/>
 
     <extensions defaultExtensionNs="org.jetbrains.idea.maven">
         <versionAwareMavenSupport implementation="org.jetbrains.idea.maven2.maven2support.Maven2SupportExtension"/>
