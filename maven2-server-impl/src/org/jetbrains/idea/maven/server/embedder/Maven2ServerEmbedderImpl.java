@@ -279,6 +279,15 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
   @NotNull
   public Collection<MavenServerExecutionResult> resolveProject(@NotNull final Collection<File> files,
                                                                @NotNull final Collection<String> activeProfiles,
+                                                               @NotNull final Collection<String> inactiveProfiles,
+                                                               boolean forceResolveDependenciesSequentially, MavenToken token) {
+    return resolveProject(files, activeProfiles, inactiveProfiles, token);
+
+  }
+
+  @NotNull
+  public Collection<MavenServerExecutionResult> resolveProject(@NotNull final Collection<File> files,
+                                                               @NotNull final Collection<String> activeProfiles,
                                                                @NotNull final Collection<String> inactiveProfiles, MavenToken token) {
     MavenServerUtil.checkToken(token);
     return ContainerUtilRt.map2List(files, file -> {
