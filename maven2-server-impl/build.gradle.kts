@@ -1,7 +1,7 @@
 plugins {
     java
     `java-library`
-    id("org.jetbrains.intellij") version "1.11.0"
+    id("org.jetbrains.intellij") version "1.13.3"
 }
 
 val ideaVersion = "${rootProject.extra.get("ideaVersion")}"

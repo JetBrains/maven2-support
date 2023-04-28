@@ -64,6 +64,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements MavenServerEmbedder {
   private final MavenEmbedder myImpl;
@@ -290,7 +291,8 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
                                                                @NotNull final Collection<String> activeProfiles,
                                                                @NotNull final Collection<String> inactiveProfiles, MavenToken token) {
     MavenServerUtil.checkToken(token);
-    return ContainerUtilRt.map2List(files, file -> {
+
+    return files.stream().map(file -> {
       try {
         return doExecute(new Executor<MavenServerExecutionResult>() {
           @NotNull
@@ -298,17 +300,16 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
           public MavenServerExecutionResult execute() throws Exception {
             DependencyTreeResolutionListener listener = new DependencyTreeResolutionListener(myConsoleWrapper);
             MavenExecutionResult result = myImpl.resolveProject(file,
-                                                                new ArrayList<String>(activeProfiles),
-                                                                new ArrayList<String>(inactiveProfiles),
-                                                                Collections.singletonList(listener));
+                    new ArrayList<String>(activeProfiles),
+                    new ArrayList<String>(inactiveProfiles),
+                    Collections.singletonList(listener));
             return createExecutionResult(file, result, listener.getRootNode());
           }
         });
-      }
-      catch (MavenServerProcessCanceledException | RemoteException e) {
+      } catch (MavenServerProcessCanceledException | RemoteException e) {
         throw new RuntimeException(e);
       }
-    });
+    }).collect(Collectors.toList());
   }
 
   @NotNull
@@ -400,7 +401,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       Maven2ServerGlobals.getLogger().info(e);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
     return Collections.emptyList();
   }
@@ -426,7 +427,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       Maven2ServerGlobals.getLogger().info(e);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
     return new MavenArtifactResolveResult(Collections.emptyList(), null);
   }
@@ -635,7 +636,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
 
   private RuntimeException getRethrowable(Throwable throwable) {
     if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
-    return rethrowException(throwable);
+    return wrapToSerializableRuntimeException(throwable);
   }
 
 
@@ -668,7 +669,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       return myCurrentIndicator;
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -730,7 +731,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       ((CustomWagonManager)getComponent(WagonManager.class)).reset();
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -741,7 +742,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       myImpl.release();
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -779,7 +780,7 @@ public final class Maven2ServerEmbedderImpl extends MavenRemoteObject implements
       Maven2ServerGlobals.getLogger().info(e);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 

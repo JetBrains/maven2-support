@@ -330,7 +330,7 @@ public final class Maven2ServerIndexerImpl extends MavenRemoteObject implements 
       myEmbedder.release(token);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 

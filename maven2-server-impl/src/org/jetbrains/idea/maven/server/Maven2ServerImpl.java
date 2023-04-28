@@ -15,6 +15,7 @@
  */
 package org.jetbrains.idea.maven.server;
 
+import com.intellij.execution.rmi.IdeaWatchdog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.maven.model.MavenExplicitProfiles;
 import org.jetbrains.idea.maven.model.MavenModel;
@@ -28,6 +29,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 
 public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
+  private volatile IdeaWatchdog myWatchdog;
 
   @Override
   public MavenServerEmbedder createEmbedder(MavenEmbedderSettings settings, MavenToken token) {
@@ -36,9 +38,8 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
       Maven2ServerEmbedderImpl result = Maven2ServerEmbedderImpl.create(settings.getSettings());
       UnicastRemoteObject.exportObject(result, 0);
       return result;
-    }
-    catch (RemoteException e) {
-      throw rethrowException(e);
+    } catch (RemoteException e) {
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -49,9 +50,8 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
       Maven2ServerIndexerImpl result = new Maven2ServerIndexerImpl();
       UnicastRemoteObject.exportObject(result, 0);
       return result;
-    }
-    catch (RemoteException e) {
-      throw rethrowException(e);
+    } catch (RemoteException e) {
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -63,7 +63,7 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
       return Maven2ServerEmbedderImpl.interpolateAndAlignModel(model, basedir);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -74,7 +74,7 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
       return Maven2ServerEmbedderImpl.assembleInheritance(model, parentModel);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -88,7 +88,7 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
       return Maven2ServerEmbedderImpl.applyProfiles(model, basedir, explicitProfiles, alwaysOnProfiles);
     }
     catch (Exception e) {
-      throw rethrowException(e);
+      throw wrapToSerializableRuntimeException(e);
     }
   }
 
@@ -99,11 +99,23 @@ public class Maven2ServerImpl extends MavenRemoteObject implements MavenServer {
 
   @Override
   public MavenPullDownloadListener createPullDownloadListener(MavenToken token) {
-   return null;
+    return null;
   }
+
 
   @Override
   public synchronized void unreferenced() {
     System.exit(0);
+  }
+
+  @Override
+  public void setWatchdog(@NotNull IdeaWatchdog watchdog) {
+    myWatchdog = watchdog;
+  }
+
+  public boolean ping(MavenToken token) throws RemoteException {
+    MavenServerUtil.checkToken(token);
+    if (null == myWatchdog) return false;
+    return myWatchdog.ping();
   }
 }
