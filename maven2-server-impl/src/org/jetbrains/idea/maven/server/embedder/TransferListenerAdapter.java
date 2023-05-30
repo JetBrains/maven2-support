@@ -59,13 +59,8 @@ public class TransferListenerAdapter implements TransferListener {
 
   @Override
   public void transferCompleted(TransferEvent event) {
-    try {
       MavenServerDownloadListener listener = Maven2ServerGlobals.getDownloadListener();
       if (listener != null) listener.artifactDownloaded(event.getLocalFile(), event.getResource().getName());
-    }
-    catch (RemoteException e) {
-      throw new RuntimeRemoteException(e);
-    }
 
     checkCanceled();
 

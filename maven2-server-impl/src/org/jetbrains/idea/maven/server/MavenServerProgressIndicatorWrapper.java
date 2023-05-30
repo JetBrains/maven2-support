@@ -11,13 +11,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Sergey Evdokimov
  */
 public class MavenServerProgressIndicatorWrapper extends MavenRemoteObject
-  implements MavenServerProgressIndicator, MavenServerPullProgressIndicator, MavenServerConsole {
+        implements MavenServerProgressIndicator, MavenServerConsoleIndicator {
 
-  private final ConcurrentLinkedQueue<MavenArtifactDownloadServerProgressEvent> myPullingQueue
-    = new ConcurrentLinkedQueue<MavenArtifactDownloadServerProgressEvent>();
+  private final ConcurrentLinkedQueue<MavenArtifactEvent> myPullingQueue
+          = new ConcurrentLinkedQueue<MavenArtifactEvent>();
 
   private final ConcurrentLinkedQueue<MavenServerConsoleEvent> myConsoleEventsQueue
-    = new ConcurrentLinkedQueue<MavenServerConsoleEvent>();
+          = new ConcurrentLinkedQueue<MavenServerConsoleEvent>();
 
   private boolean myCancelled = false;
 
@@ -31,32 +31,32 @@ public class MavenServerProgressIndicatorWrapper extends MavenRemoteObject
   }
 
   @Override
-  public void startedDownload(ResolveType type, String dependencyId) throws RemoteException {
-    myPullingQueue.add(new MavenArtifactDownloadServerProgressEvent(type,
-                                                                    MavenArtifactDownloadServerProgressEvent.ArtifactEventType.DOWNLOAD_STARTED,
-                                                                    dependencyId,
-                                                                    null,
-                                                                    null));
+  public void startedDownload(ResolveType type, String dependencyId) {
+    myPullingQueue.add(new MavenArtifactEvent(type,
+            MavenArtifactEvent.ArtifactEventType.DOWNLOAD_STARTED,
+            dependencyId,
+            null,
+            null));
   }
 
   @Override
-  public void completedDownload(ResolveType type, String dependencyId) throws RemoteException {
-    myPullingQueue.add(new MavenArtifactDownloadServerProgressEvent(type,
-                                                                    MavenArtifactDownloadServerProgressEvent.ArtifactEventType.DOWNLOAD_COMPLETED,
-                                                                    dependencyId,
-                                                                    null, null));
+  public void completedDownload(ResolveType type, String dependencyId) {
+    myPullingQueue.add(new MavenArtifactEvent(type,
+            MavenArtifactEvent.ArtifactEventType.DOWNLOAD_COMPLETED,
+            dependencyId,
+            null, null));
   }
 
   @Override
-  public void failedDownload(ResolveType type, String dependencyId, String errorMessage, String stackTrace) throws RemoteException {
-    myPullingQueue.add(new MavenArtifactDownloadServerProgressEvent(type,
-                                                                    MavenArtifactDownloadServerProgressEvent.ArtifactEventType.DOWNLOAD_FAILED,
-                                                                    dependencyId,
-                                                                    errorMessage, stackTrace));
+  public void failedDownload(ResolveType type, String dependencyId, String errorMessage, String stackTrace) {
+    myPullingQueue.add(new MavenArtifactEvent(type,
+            MavenArtifactEvent.ArtifactEventType.DOWNLOAD_FAILED,
+            dependencyId,
+            errorMessage, stackTrace));
   }
 
   @Override
-  public boolean isCanceled() throws RemoteException {
+  public boolean isCanceled() {
     return myCancelled;
   }
 
@@ -70,19 +70,14 @@ public class MavenServerProgressIndicatorWrapper extends MavenRemoteObject
 
   @Nullable
   @Override
-  public List<MavenArtifactDownloadServerProgressEvent> pullDownloadEvents() throws RemoteException {
+  public List<MavenArtifactEvent> pullDownloadEvents() {
     return MavenRemotePullUtil.pull(myPullingQueue);
   }
 
   @Nullable
   @Override
-  public List<MavenServerConsoleEvent> pullConsoleEvents() throws RemoteException {
+  public List<MavenServerConsoleEvent> pullConsoleEvents() {
     return MavenRemotePullUtil.pull(myConsoleEventsQueue);
-  }
-
-  @Override
-  public void printMessage(int level, String message, Throwable throwable) throws RemoteException {
-    myConsoleEventsQueue.add(new MavenServerConsoleEvent(level, message, throwable));
   }
 
   @Override

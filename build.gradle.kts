@@ -6,7 +6,7 @@ plugins {
 group = "org.jetbrains.idea.maven"
 version = "1.2-SNAPSHOT"
 
-val ideaVersion by rootProject.extra { "231-SNAPSHOT" }
+val ideaVersion by rootProject.extra { "232-SNAPSHOT" }
 val ideaType by rootProject.extra { "IC" }
 
 repositories {
@@ -79,7 +79,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("231")
+        sinceBuild.set("232")
     }
 
     signPlugin {

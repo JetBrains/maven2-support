@@ -231,9 +231,23 @@ public final class Maven2ServerIndexerImpl extends MavenRemoteObject implements 
     }
   }
 
+  @NotNull
   @Override
-  public IndexedMavenId addArtifact(MavenIndexId indexId, File artifactFile, MavenToken token) throws MavenServerIndexerException {
+  public List<AddArtifactResponse> addArtifacts(@NotNull MavenIndexId mavenIndexId, @NotNull Collection<File> artifactFiles, MavenToken token) throws RemoteException, MavenServerIndexerException {
     MavenServerUtil.checkToken(token);
+    List<AddArtifactResponse> responses = new ArrayList<>();
+    for (File artifactFile : artifactFiles) {
+      try {
+        IndexedMavenId indexedMavenId = addArtifact(mavenIndexId, artifactFile);
+        responses.add(new AddArtifactResponse(artifactFile, indexedMavenId));
+      } catch (Exception ignore) {
+      }
+    }
+    return responses;
+  }
+
+
+  private IndexedMavenId addArtifact(MavenIndexId indexId, File artifactFile) {
     try {
       IndexingContext index = getIndex(indexId);
       synchronized (index) {
@@ -247,7 +261,7 @@ public final class Maven2ServerIndexerImpl extends MavenRemoteObject implements 
       }
     }
     catch (Exception e) {
-      throw new MavenServerIndexerException(wrapException(e));
+      throw wrapToSerializableRuntimeException(wrapException(e));
     }
   }
 
