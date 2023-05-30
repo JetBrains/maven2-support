@@ -31,6 +31,11 @@ intellij {
 }
 
 
+tasks {
+    buildSearchableOptions {
+        enabled = false
+    }
+}
 sourceSets {
     getByName("main").java.srcDirs("src")
 }
